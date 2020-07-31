@@ -1,0 +1,61 @@
+@layout('app')
+@section('style-overrides')
+{{ style('auth') }}
+@endsection
+@section('content')
+<div class="ui middle aligned center aligned grid">
+  <div class="column">
+    <h2 class="ui blue image header">
+      <div class="content">
+        Create an account
+      </div>
+    </h2>
+    <form class="ui large form" action="{{ route('AuthController.postRegister') }}" id="register-form" method="POST">
+      {{ csrfField() }}
+      <div class="ui stacked segment">
+        <div class="field">
+            <input type="text" name="fname" placeholder="Firstname" value="{{ old('fname', '') }}">
+        </div>
+        <div class="field">
+            <input type="text" name="lname" placeholder="Lastname" value="{{ old('lname', '') }}">
+        </div>
+        <div class="field">
+          <div class="ui left icon input">
+            <i class="envelope icon"></i>
+            <input type="text" name="email" placeholder="E-mail address" value="{{ old('email', '') }}">
+          </div>
+        </div>
+        <div class="field">
+          <div class="ui left icon input">
+            <i class="lock icon"></i>
+            <input type="password" name="password" placeholder="Password">
+          </div>
+        </div>
+        <div class="field">
+          <div class="ui left icon input">
+            <i class="lock icon"></i>
+            <input type="password" name="password_confirmation" placeholder="Password confirmation">
+          </div>
+        </div>
+        <button class="ui fluid large blue submit button" type="submit">Register</button>
+      </div>
+      @if(errors())
+        <div class="ui error message" style="display: inherit;">
+          <ul class="list">
+            {{ elIf('<li>$self</li>', getErrorFor('fname'), hasErrorFor('fname')) }}
+            {{ elIf('<li>$self</li>', getErrorFor('lname'), hasErrorFor('lname')) }}
+            {{ elIf('<li>$self</li>', getErrorFor('email'), hasErrorFor('email')) }}
+            {{ elIf('<li>$self</li>', getErrorFor('password'), hasErrorFor('password')) }}
+            {{ elIf('<li>$self</li>', getErrorFor('password_confirmation'), hasErrorFor('password_confirmation')) }}
+          </ul>
+        </div>
+      @else
+        <div class="ui error message"></div>
+      @endif
+    </form>
+    <div class="ui message">
+      Have an account? <a href="{{ route('AuthController.login') }}">Login</a>
+    </div>
+  </div>
+</div>
+@endsection

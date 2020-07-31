@@ -1,0 +1,11 @@
+@layout('app')
+@section('style-overrides')
+{{ style('auth') }}
+@endsection
+@section('content')
+<h1>Dashboard</h1>
+<form action="{{ route('AuthController.logout') }}" method="POST">
+  {{ csrfField() }}
+  <button type="submit" class="ui small blue submit button">Log out</button>
+</form>
+@endsection

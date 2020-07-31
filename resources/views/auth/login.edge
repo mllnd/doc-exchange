@@ -1,0 +1,51 @@
+@layout('app')
+@section('style-overrides')
+{{ style('auth') }}
+@endsection
+@section('content')
+<div class="ui middle aligned center aligned grid">
+  <div class="column">
+    <h2 class="ui blue image header">
+      <div class="content">
+        Log-in to your account
+      </div>
+    </h2>
+    @if(flashMessage('success_message'))
+      <div class="ui positive message">
+        <p>{{ flashMessage('success_message') }}</p>
+      </div>
+    @endif
+    <form class="ui large form" action="{{ route('AuthController.postLogin') }}" method="POST" id="login-form">
+      {{ csrfField() }}
+      <div class="ui stacked segment">
+        <div class="field">
+          <div class="ui left icon input">
+            <i class="envelope icon"></i>
+            <input type="text" name="email" placeholder="E-mail address">
+          </div>
+        </div>
+        <div class="field">
+          <div class="ui left icon input">
+            <i class="lock icon"></i>
+            <input type="password" name="password" placeholder="Password">
+          </div>
+        </div>
+        <button class="ui fluid large blue submit button" type="submit">Login</button>
+      </div>
+      @if(errors())
+        <div class="ui error message" style="display: inherit;">
+          <ul class="list">
+            {{ elIf('<li>$self</li>', getErrorFor('email'), hasErrorFor('email')) }}
+            {{ elIf('<li>$self</li>', getErrorFor('password'), hasErrorFor('password')) }}
+          </ul>
+        </div>
+      @else
+        <div class="ui error message"></div>
+      @endif
+    </form>
+    <div class="ui message">
+      New to us? <a href="{{ route('AuthController.register') }}">Sign Up</a>
+    </div>
+  </div>
+</div>
+@endsection
