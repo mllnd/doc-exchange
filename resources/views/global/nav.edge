@@ -1,0 +1,15 @@
+<div class="ui attached stackable menu">
+  <div class="ui container">
+    <a class="item" href="{{ route('/dashboard') }}">
+      <i class="dashboard icon"></i> Dashboard
+    </a>
+      <a id="logout-btn" type="submit" class="right item">
+        <i class="logout icon"></i> Log out
+        <form id="logout-form" action="{{ route('AuthController.logout') }}" method="POST">
+          {{ csrfField() }}
+        </form>
+      </a>
+    </form>
+  </div>
+</div>
+<div class="ui hidden divider"></div>

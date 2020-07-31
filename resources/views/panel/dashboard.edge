@@ -1,11 +1,31 @@
 @layout('app')
-@section('style-overrides')
-{{ style('auth') }}
-@endsection
 @section('content')
-<h1>Dashboard</h1>
-<form action="{{ route('AuthController.logout') }}" method="POST">
-  {{ csrfField() }}
-  <button type="submit" class="ui small blue submit button">Log out</button>
-</form>
+<div class="ui container">
+  <div class="ui message">
+    <div class="header">
+      Hello {{ auth.user.fname }}!
+    </div>
+    <p>Welcome to the document transfer platform. Test out the concept by transferring some documents below.</p>
+  </div>
+</div>
+<div class="ui hidden divider"></div>
+<div class="ui placeholder segment container">
+  <div class="ui two column very relaxed stackable grid">
+    <div class="column">
+      <div class="ui big button blue">
+        <i class="exchange icon"></i>
+          Transfer
+      </div>
+    </div>
+    <div class="middle aligned column">
+      <div class="ui big button">
+        <i class="eye icon"></i>
+          View history
+      </div>
+    </div>
+  </div>
+  <div class="ui vertical divider">
+    Or
+  </div>
+</div>
 @endsection

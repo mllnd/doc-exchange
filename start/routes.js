@@ -26,11 +26,10 @@ Route.group(() => {
     Route.post('register', 'AuthController.postRegister').validator('AuthRegister')
 }).prefix('auth').middleware('guest')
 
-
 // Authenticated
 Route.group(() => {
     Route.post('logout', 'AuthController.logout')
-    Route.on('dashboard').render('panel.dashboard')
+    Route.get('dashboard', 'AuthController.dashboard')
 }).middleware(['authRedirect','auth:session'])
 
 Route.get('/users', 'UserController.index')

@@ -1,6 +1,7 @@
 'use strict'
 
 const User = use('App/Models/User')
+const Web3 = use('Service/Web3')
 
 class AuthController {
   login({ request, response, view }) {
@@ -39,6 +40,10 @@ class AuthController {
     await auth.login(user)
 
     return response.redirect('/dashboard')
+  }
+
+  dashboard({ request, response, view, auth }) {
+    return view.render('panel.dashboard')
   }
 }
 

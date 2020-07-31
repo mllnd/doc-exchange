@@ -1,6 +1,12 @@
 $(document).ready(function() {
+
+  // Logout button
+  $('#logout-btn').on('click', function () {
+    $('#logout-form').submit();
+  });
+
   const validationForms = [
-    /*"#login-form",  "#register-form" */
+    "#login-form",  "#register-form"
   ];
   const validationRules = {
     "#login-form": {
