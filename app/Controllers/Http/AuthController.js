@@ -34,6 +34,11 @@ class AuthController {
     user.email = request.input('email')
     // A User hook will perform password hashing.
     user.password = request.input('password')
+    // Create an eth account.
+    const account = Web3.eth.accounts.create();
+    user.address = account.address;
+    // A User hook will encrypt the private key.
+    user.key = account.privateKey;
 
     // Save the user and login.
     await user.save()
@@ -43,6 +48,7 @@ class AuthController {
   }
 
   dashboard({ request, response, view, auth }) {
+    let account = Web3.eth.accounts.create();
     return view.render('panel.dashboard')
   }
 }
