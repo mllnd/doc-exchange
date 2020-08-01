@@ -48,7 +48,6 @@ class AuthController {
   }
 
   dashboard({ request, response, view, auth }) {
-    let account = Web3.eth.accounts.create();
     return view.render('panel.dashboard')
   }
 }
