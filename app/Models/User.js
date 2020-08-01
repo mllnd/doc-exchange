@@ -6,6 +6,9 @@ const Hash = use('Hash')
 /** @type {import('@adonisjs/framework/src/Encryption')} */
 const Encryption = use('Encryption')
 
+/** @type {import('web3')} */
+const Web3 = use('Service/Web3')
+
 /** @type {typeof import('@adonisjs/lucid/src/Lucid/Model')} */
 const Model = use('Model')
 
@@ -40,6 +43,18 @@ class User extends Model {
    */
   tokens () {
     return this.hasMany('App/Models/Token')
+  }
+
+  async account() {
+    const privateKey = await Encryption.decrypt(this.key)
+
+    return Web3.eth.accounts.privateKeyToAccount(privateKey)
+  }
+
+  async balance() {
+    const balance = await Web3.eth.getBalance(this.address)
+
+    return Web3.utils.fromWei(balance)
   }
 }
 

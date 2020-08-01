@@ -47,7 +47,7 @@ class AuthController {
     return response.redirect('/dashboard')
   }
 
-  dashboard({ request, response, view, auth }) {
+  async dashboard({ request, response, view, auth }) {
     return view.render('panel.dashboard')
   }
 }
