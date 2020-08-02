@@ -22,7 +22,8 @@ const providers = [
   '@adonisjs/session/providers/SessionProvider',
   '@adonisjs/auth/providers/AuthProvider',
   '@adonisjs/validator/providers/ValidatorProvider',
-  path.join(__dirname, '..', 'providers', 'Web3Provider')
+  path.join(__dirname, '..', 'providers', 'Web3Provider'),
+  path.join(__dirname, '..', 'providers', 'MainAccountProvider')
 ]
 
 /*
@@ -60,6 +61,8 @@ const aliases = {}
 | Here you store ace commands for your package
 |
 */
-const commands = []
+const commands = [
+  'App/Commands/Setup'
+]
 
 module.exports = { providers, aceProviders, aliases, commands }

@@ -2,6 +2,7 @@
 
 const User = use('App/Models/User')
 const Web3 = use('Service/Web3')
+const MainAccount = use('Service/MainAccount')
 
 class AuthController {
   login({ request, response, view }) {
@@ -48,6 +49,7 @@ class AuthController {
   }
 
   async dashboard({ request, response, view, auth }) {
+    console.log(MainAccount)
     return view.render('panel.dashboard')
   }
 }
