@@ -1,0 +1,28 @@
+@layout('app')
+@section('content')
+<div class="ui container">
+  <h1 class="ui header">
+    Your Transfers
+    <div class="sub header">View your previous document transfers between users</div>
+  </h1>
+</div>
+<div class="ui hidden divider"></div>
+<div class="ui container">
+  <a href="{{ route('TransferController.create') }}" class="ui button blue"><i class="plus icon"></i> New transfer</a>
+  <table class="ui single blue line table">
+  <thead>
+    <tr>
+      <th>Transfer ID</th>
+      <th>Recipient</th>
+      <th>Timestamp</th>
+      <th>Status</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td colspan="4">No data</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+@endsection

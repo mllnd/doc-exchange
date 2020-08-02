@@ -3,6 +3,15 @@
     <a class="item" href="{{ route('/dashboard') }}">
       <i class="dashboard icon"></i> Dashboard
     </a>
+    <a class="item" href="{{ route('/transfers') }}">
+      <i class="exchange icon"></i> Transfers
+    </a>
+    <a class="item" href="{{ route('/history') }}">
+      <i class="list icon"></i> History
+    </a>
+    <a class="item" href="{{ route('/users') }}">
+      <i class="users icon"></i> Users
+    </a>
       <a id="logout-btn" type="submit" class="right item">
         <i class="logout icon"></i> Log out
         <form id="logout-form" action="{{ route('AuthController.logout') }}" method="POST">

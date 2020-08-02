@@ -50,7 +50,7 @@ class AuthController {
 
   async dashboard({ request, response, view, auth }) {
     console.log(MainAccount)
-    return view.render('panel.dashboard')
+    return view.render('dashboard.index')
   }
 }
 

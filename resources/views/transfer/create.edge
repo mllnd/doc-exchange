@@ -1,0 +1,42 @@
+@layout('app')
+@section('content')
+<div class="ui container">
+  <h1 class="ui header">
+    New transfer
+    <div class="sub header">Transfer a document to another platform user</div>
+  </h1>
+</div>
+<div class="ui hidden divider"></div>
+<div class="ui container three column grid">
+  <div class="eight wide column">
+  <form class="ui form" method="POST" action="{{ route('TransferController.store') }}" enctype="multipart/form-data">
+    {{ csrfField() }}
+    <div class="field">
+      <label>Document</label>
+      <input type="file" name="document" placeholder="Contract.pdf">
+    </div>
+    <div class="field">
+      <label>Recipient</label>
+      <select class="ui search dropdown" name="recipient">
+        @each(user in users)
+          @if(user.id != auth.user.id)
+            <option value="{{ user.id }}">{{ user.nickname }}</option>
+          @endif
+        @endeach
+      </select>
+    </div>
+    @if(errors())
+      <div class="ui error message" style="display: inherit;">
+        <ul class="list">
+          {{ elIf('<li>$self</li>', getErrorFor('document'), hasErrorFor('document')) }}
+          {{ elIf('<li>$self</li>', getErrorFor('recipient'), hasErrorFor('recipient')) }}
+        </ul>
+      </div>
+    @else
+      <div class="ui error message"></div>
+    @endif
+    <button class="ui button blue" type="submit">Transfer</button>
+  </form>
+</div>
+</div>
+@endsection

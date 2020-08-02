@@ -20,16 +20,19 @@ Route.on('/').render('welcome')
 
 // Auth routes
 Route.group(() => {
-    Route.get('login', 'AuthController.login')
-    Route.post('login', 'AuthController.postLogin').validator('AuthLogin')
-    Route.get('register', 'AuthController.register')
-    Route.post('register', 'AuthController.postRegister').validator('AuthRegister')
+  Route.get('login', 'AuthController.login')
+  Route.post('login', 'AuthController.postLogin').validator('AuthLogin')
+  Route.get('register', 'AuthController.register')
+  Route.post('register', 'AuthController.postRegister').validator('AuthRegister')
 }).prefix('auth').middleware('guest')
 
 // Authenticated
 Route.group(() => {
-    Route.post('logout', 'AuthController.logout')
-    Route.get('dashboard', 'AuthController.dashboard')
-}).middleware(['authRedirect','auth:session'])
+  Route.post('logout', 'AuthController.logout')
+  Route.get('dashboard', 'AuthController.dashboard')
+  Route.get('transfers', 'TransferController.index')
+  Route.post('transfers', 'TransferController.store').validator('StoreTransfer')
+  Route.get('transfers/create', 'TransferController.create')
+}).middleware(['authRedirect', 'auth:session'])
 
 Route.get('/users', 'UserController.index')

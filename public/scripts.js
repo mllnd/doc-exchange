@@ -1,5 +1,7 @@
 $(document).ready(function() {
 
+  $('select.dropdown').dropdown();
+
   // Logout button
   $('#logout-btn').on('click', function () {
     $('#logout-form').submit();

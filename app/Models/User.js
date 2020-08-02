@@ -31,6 +31,10 @@ class User extends Model {
     })
   }
 
+  static get computed () {
+    return ['nickname']
+  }
+
   /**
    * A relationship on tokens is required for auth to
    * work. Since features like `refreshTokens` or
@@ -45,13 +49,17 @@ class User extends Model {
     return this.hasMany('App/Models/Token')
   }
 
-  async account() {
+  getNickname ({ fname, lname }) {
+    return `${fname} ${lname.charAt(0)}.`
+  }
+
+  async account () {
     const privateKey = await Encryption.decrypt(this.key)
 
     return Web3.eth.accounts.privateKeyToAccount(privateKey)
   }
 
-  async balance() {
+  async balance () {
     const balance = await Web3.eth.getBalance(this.address)
 
     return Web3.utils.fromWei(balance)
