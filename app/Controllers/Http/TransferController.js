@@ -1,6 +1,7 @@
 'use strict'
 
 const User = use('App/Models/User')
+const Transfer = use('App/Models/Transfer')
 
 /** @type {import('@adonisjs/framework/src/Encryption')} */
 const Encryption = use('Encryption')
@@ -8,6 +9,8 @@ const Drive = use('Drive')
 /** @typedef {import('@adonisjs/framework/src/Request')} Request */
 /** @typedef {import('@adonisjs/framework/src/Response')} Response */
 /** @typedef {import('@adonisjs/framework/src/View')} View */
+
+const { RandomToken } = require('@sibevin/random-token')
 
 /**
  * Resourceful controller for interacting with transfers
@@ -48,16 +51,25 @@ class TransferController {
    * @param {Request} ctx.request
    * @param {Response} ctx.response
    */
-  async store ({ request, response }) {
+  async store ({ request, response, auth }) {
      const recipient = request.input('recipient')
      const document = request.file('document')
      const fileContents = require('fs').readFileSync(document.tmpPath).toString()
      // TODO: create the transfer object.
      // Encrypt the contents of the file and store it away.
      const encrypted = await Encryption.encrypt(fileContents)
-     await Drive.put(`random.${document.extname}.enc`, Buffer.from(encrypted))
+     const indentifier = RandomToken.gen({ length: 9, casing: 'lower' })
+     const docName = `${indentifier}.${document.extname}.enc`
+     await Drive.put(docName, Buffer.from(encrypted))
      // Remove the file from temporary storage.
      require('fs').unlinkSync(document.tmpPath)
+
+     const transfer = new Transfer()
+     transfer.sender_id = auth.user.id
+     transfer.recipient_id = recipient
+     transfer.document_name = docName
+     transfer.transfer_identifier = indentifier
+     await transfer.save()
      return response.redirect('/transfers/create')
   }
 

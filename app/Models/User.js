@@ -49,6 +49,14 @@ class User extends Model {
     return this.hasMany('App/Models/Token')
   }
 
+  transfers () {
+    return this.hasMany('App/Models/Transfer', 'id', 'sender_id')
+  }
+
+  received () {
+    return this.hasMany('App/Models/Transfer', 'id', 'recipient_id')
+  }
+
   getNickname ({ fname, lname }) {
     return `${fname} ${lname.charAt(0)}.`
   }
