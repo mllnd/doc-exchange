@@ -10,8 +10,12 @@ class TransfersSchema extends Schema {
       table.string('transfer_identifier').notNullable()
       table.integer('sender_id').notNullable().unsigned().references('id').inTable('users')
       table.integer('recipient_id').unsigned().references('id').inTable('users')
-      table.string('transaction').nullable()
+      table.string('contract_address', 42).nullable()
       table.string('document_name').notNullable()
+      table.string('document_mime').notNullable()
+      table.string('document_hash', 64).notNullable()
+      table.string('sender_signature', 132).notNullable()
+      table.string('receiver_signature', 132).nullable()
       table.timestamps()
     })
   }

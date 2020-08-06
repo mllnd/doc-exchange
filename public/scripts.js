@@ -1,6 +1,13 @@
 $(document).ready(function() {
 
+  $('.menu .item').tab();
+
   $('select.dropdown').dropdown();
+
+  // Sign button
+  $('#accept-sign').on('click', function () {
+    $('#accept-sign-form').submit();
+  });
 
   // Logout button
   $('#logout-btn').on('click', function () {

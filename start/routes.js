@@ -33,6 +33,9 @@ Route.group(() => {
   Route.get('transfers', 'TransferController.index')
   Route.post('transfers', 'TransferController.store').validator('StoreTransfer')
   Route.get('transfers/create', 'TransferController.create')
+  Route.get('transfers/:id', 'TransferController.show')
+  Route.get('transfers/:id/file', 'TransferController.file')
+  Route.post('transfers/:id/accept', 'TransferController.accept')
 }).middleware(['authRedirect', 'auth:session'])
 
 Route.get('/users', 'UserController.index')

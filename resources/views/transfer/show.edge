@@ -1,0 +1,64 @@
+@layout('app')
+@section('content')
+<div class="ui container">
+  <h1 class="ui header blue">
+    {{ transfer.transfer_identifier }}
+    <div class="sub header">Receipt for given transfer</div>
+  </h1>
+</div>
+<div class="ui hidden divider"></div>
+<div class="ui raised segment container">
+<table>
+  <tbody>
+    <tr>
+      <td><b>Sender:</b></td>
+      <td><code>{{ transfer.sender.address }}</code> ({{ transfer.sender.nickname }})</td>
+    </tr>
+    <tr>
+      <td><b>Recipient:</b></td>
+      <td><code>{{ transfer.recipient.address }}</code> ({{ transfer.recipient.nickname }})</td>
+    </tr>
+    <tr>
+      <td><b>Contract:</b></td>
+      <td><code><a target="_blank" href="https://ropsten.etherscan.io/address/{{ transfer.contract_address }}">{{ transfer.contract_address }}</a></code></td>
+    </tr>
+    <tr>
+      <td><b>Document Hash:</b></td>
+      <td><code>{{ transfer.document_hash }}</code></td>
+    </tr>
+  </tbody>
+</table>
+<h3 class="ui header">
+  Status:
+  @if(!transfer.receiver_signature)
+  <div class="ui small grey horizontal label">Not Completed</div>
+  @else
+  <div class="ui small green horizontal label">Completed</div>
+  @endif
+</h3>
+<h3 class="ui header">
+  Sender Signature:
+  <div class="sub header">{{ transfer.sender_signature }}</div>
+</h3>
+<h3 class="ui header">
+  Recipient Signature:
+  <div class="sub header">
+    @if(transfer.recipient_signature)
+      {{ transfer.recipient_signature }}
+    @else
+      Not signed yet!
+    @endif
+  </div>
+</h3>
+@if(auth.user.id == transfer.recipient.id && !transfer.receiver_signature)
+  <form id="accept-sign-form" action="{{ route('TransferController.accept', { id: transfer.id }) }}" method="POST">
+    {{ csrfField() }}
+  </form>
+  <button id="accept-sign" type="submit" href="https://ropsten.etherscan.io/verifySig" class="ui button positive"><i class="pen square icon"></i>Accept and Sign</button>
+@endif
+<a target="_blank" href="https://ropsten.etherscan.io/verifySig" class="ui button primary"><i class="ethereum icon"></i>Verify Signatures on Etherscan</a>
+@if((auth.user.id == transfer.sender.id && !transfer.receiver_signature) || (auth.user.id == transfer.recipient.id && transfer.receiver_signature))
+  <a href="{{ route('TransferController.file', { id: transfer.id }) }}" class="ui button"><i class="file outline icon"></i>View Document</a>
+@endif
+</div>
+@endsection

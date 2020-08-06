@@ -13,7 +13,10 @@ class Web3Provider extends ServiceProvider {
   register () {
     this.app.singleton('Service/Web3', () => {
       const Env = this.app.use('Adonis/Src/Env')
-      return new (require('web3'))(new (require('web3')).providers.HttpProvider(Env.get('INFURA_URL')))
+      const provider = Env.get('WEB3_PROVIDER_TYPE') == 'http'
+      ? new (require('web3')).providers.HttpProvider(Env.get('WEB3_HTTP_URL'))
+      : Env.get('WEB3_RPC_URL')
+      return new (require('web3'))(provider)
     })
   }
 

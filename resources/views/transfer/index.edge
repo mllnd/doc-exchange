@@ -8,21 +8,62 @@
 </div>
 <div class="ui hidden divider"></div>
 <div class="ui container">
-  <a href="{{ route('TransferController.create') }}" class="ui button blue"><i class="plus icon"></i> New transfer</a>
+  <div class="ui compact menu">
+    <a class="item active" data-tab="initiated">Initiated transfers</a>
+    <a class="item" data-tab="received">Received transfers<div class="floating ui red label">1</div></a>
+    <a href="{{ route('TransferController.create') }}" class="ui item blue"><i class="plus icon"></i> New transfer</a>
+  </div>
+  <div class="ui active tab segment" data-tab="initiated">
+    <table class="ui single blue line table">
+      <thead>
+      <tr>
+        <th class="center aligned">Transfer</th>
+        <th>Recipient</th>
+        <th class="center aligned">Transfer Timestamp</th>
+        <th class="center aligned">Status</th>
+      </tr>
+      </thead>
+      <tbody>
+      @each(transfer in initiated)
+        <tr>
+          <td class="center aligned"><b><a href="{{ route('TransferController.show', { id: transfer.id }) }}">{{ transfer.transfer_identifier }}</b></b></td>
+          <td><code>{{ transfer.recipient.address }}</code> ({{ transfer.recipient.nickname }})</td>
+          <td class="center aligned">{{ transfer.created_at }}</td>
+          @if(!transfer.receiver_signature)
+            <td class="center aligned"><div class="ui grey horizontal label">Not Completed</div></td>
+          @else
+            <td class="center aligned"><div class="ui green horizontal label">Completed</div></td>
+          @endif
+        </tr>
+      @endeach
+      </tbody>
+    </table>
+  </div>
+  <div class="ui tab segment" data-tab="received">
   <table class="ui single blue line table">
-  <thead>
-    <tr>
-      <th>Transfer ID</th>
-      <th>Recipient</th>
-      <th>Timestamp</th>
-      <th>Status</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td colspan="4">No data</td>
-    </tr>
-  </tbody>
-</table>
+    <thead>
+      <tr>
+        <th class="center aligned">Transfer</th>
+        <th>Sender</th>
+        <th class="center aligned">Transfer Timestamp</th>
+        <th class="center aligned">Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      @each(transfer in received)
+        <tr>
+          <td class="center aligned"><b><a href="{{ route('TransferController.show', { id: transfer.id }) }}">{{ transfer.transfer_identifier }}</b></b></td>
+          <td><code>{{ transfer.sender.address }}</code> ({{ transfer.sender.nickname }})</td>
+          <td class="center aligned">{{ transfer.created_at }}</td>
+          @if(!transfer.receiver_signature)
+            <td class="center aligned"><a href="{{ route('TransferController.show', { id: transfer.id }) }}" class="ui blue horizontal label"><i class="pen square icon"></i>Accept</a></td>
+          @else
+            <td class="center aligned"><div class="ui green horizontal label">Completed</div></td>
+          @endif
+        </tr>
+      @endeach
+    </tbody>
+  </table>
+  </div>
 </div>
 @endsection

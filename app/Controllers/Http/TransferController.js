@@ -4,8 +4,15 @@ const User = use('App/Models/User')
 const Transfer = use('App/Models/Transfer')
 
 /** @type {import('@adonisjs/framework/src/Encryption')} */
-const Encryption = use('Encryption')
+const Helpers = use('Helpers')
 const Drive = use('Drive')
+/** @type {import('web3')} */
+const Web3 = use('Service/Web3')
+const Encryption = use('Encryption')
+const MainAccount = use('Service/MainAccount')
+const TransferService = new (require('../../Services/TransferService'))()
+
+const sha256File = require('sha256-file');
 /** @typedef {import('@adonisjs/framework/src/Request')} Request */
 /** @typedef {import('@adonisjs/framework/src/Response')} Response */
 /** @typedef {import('@adonisjs/framework/src/View')} View */
@@ -25,8 +32,14 @@ class TransferController {
    * @param {Response} ctx.response
    * @param {View} ctx.view
    */
-  async index ({ request, response, view }) {
-    return view.render('transfer.index')
+  async index({ request, response, view, auth }) {
+    const initiatedTransfers = await Transfer.query().where('sender_id', auth.user.id).with('recipient').fetch()
+    const receivedTransfers = await Transfer.query().where('recipient_id', auth.user.id).with('sender').fetch()
+
+    return view.render('transfer.index', {
+      initiated: initiatedTransfers.toJSON(),
+      received: receivedTransfers.toJSON()
+    })
   }
 
   /**
@@ -38,9 +51,9 @@ class TransferController {
    * @param {Response} ctx.response
    * @param {View} ctx.view
    */
-  async create ({ request, response, view }) {
+  async create({ request, response, view }) {
     const users = await User.all()
-    return view.render('transfer.create', {users: users.toJSON()})
+    return view.render('transfer.create', { users: users.toJSON() })
   }
 
   /**
@@ -51,26 +64,33 @@ class TransferController {
    * @param {Request} ctx.request
    * @param {Response} ctx.response
    */
-  async store ({ request, response, auth }) {
-     const recipient = request.input('recipient')
-     const document = request.file('document')
-     const fileContents = require('fs').readFileSync(document.tmpPath).toString()
-     // TODO: create the transfer object.
-     // Encrypt the contents of the file and store it away.
-     const encrypted = await Encryption.encrypt(fileContents)
-     const indentifier = RandomToken.gen({ length: 9, casing: 'lower' })
-     const docName = `${indentifier}.${document.extname}.enc`
-     await Drive.put(docName, Buffer.from(encrypted))
-     // Remove the file from temporary storage.
-     require('fs').unlinkSync(document.tmpPath)
+  async store({ request, response, auth, session }) {
+    const recipient = await User.find(request.input('recipient'))
+    const document = request.file('document')
+    const identifier = RandomToken.gen({ length: 9, casing: 'lower' })
+    const documentHash = sha256File(document.tmpPath)
+    const documentName = `${identifier}.${document.extname}`
+    const signature = (await auth.user.account()).sign(documentHash).signature
 
-     const transfer = new Transfer()
-     transfer.sender_id = auth.user.id
-     transfer.recipient_id = recipient
-     transfer.document_name = docName
-     transfer.transfer_identifier = indentifier
-     await transfer.save()
-     return response.redirect('/transfers/create')
+    // Save the DB entry for the transfer.
+    const transfer = await TransferService.storeTransfer(
+      auth.user.id, recipient.id, documentName, signature,
+      identifier, documentHash, document.headers['content-type']
+    )
+
+    // Save the document associated with the transfer.
+    await TransferService.storeDocument(document, identifier)
+
+    // Deploy a smart contract.
+    const contract = await TransferService.deployContract('DocumentContract', [signature, documentHash])
+    console.log(contract.options.address)
+
+    // Attach the created contract.
+    transfer.contract_address = contract.options.address
+    await transfer.save()
+
+    session.flash({ success_message: 'Transfer successfully initiated! The recipient should accept it to view details.' })
+    return response.redirect('/transfers/create')
   }
 
   /**
@@ -82,7 +102,54 @@ class TransferController {
    * @param {Response} ctx.response
    * @param {View} ctx.view
    */
-  async show ({ params, request, response, view }) {
+  async show({ params, request, response, view }) {
+    const transfer = await Transfer.findByOrFail('id', params.id)
+    await transfer.loadMany(['recipient', 'sender'])
+    return view.render('transfer.show', { transfer: transfer.toJSON() })
+  }
+
+  /**
+   * Get a single transfer file.
+   * GET transfers/:id/file
+   *
+   * @param {object} ctx
+   * @param {Request} ctx.request
+   * @param {Response} ctx.response
+   * @param {View} ctx.view
+   */
+  async file({ params, request, response, view }) {
+    // TODO: implement permission check!
+    const transfer = await Transfer.findByOrFail('id', params.id)
+
+    const file = await Drive.get(`${transfer.document_name}.enc`)
+    const decrypted = await Encryption.decrypt(file.toString('utf-8'))
+
+    response.header('Content-Disposition', `attachment; filename="${transfer.document_name}"`)
+    response.header('Content-Type', transfer.document_mime)
+
+    return response.send(Buffer.from(decrypted))
+  }
+
+  /**
+   * Accept a transfer.
+   * GET transfers/:id/accept
+   *
+   * @param {object} ctx
+   * @param {Request} ctx.request
+   * @param {Response} ctx.response
+   * @param {View} ctx.view
+   */
+  async accept({ params, request, response, view, auth }) {
+    // TODO: implement permission check!
+    const transfer = await Transfer.findByOrFail('id', params.id)
+    const signature = (await auth.user.account()).sign(transfer.document_hash).signature
+
+    transfer.receiver_signature = signature
+
+    await transfer.save()
+
+    // TODO: smart contract -> store signature
+    return response.route(`/transfers/${transfer.id}`)
   }
 
   /**
@@ -94,8 +161,7 @@ class TransferController {
    * @param {Response} ctx.response
    * @param {View} ctx.view
    */
-  async edit ({ params, request, response, view }) {
-  }
+  async edit({ params, request, response, view }) {}
 
   /**
    * Update transfer details.
@@ -105,8 +171,7 @@ class TransferController {
    * @param {Request} ctx.request
    * @param {Response} ctx.response
    */
-  async update ({ params, request, response }) {
-  }
+  async update({ params, request, response }) {}
 
   /**
    * Delete a transfer with id.
@@ -116,8 +181,7 @@ class TransferController {
    * @param {Request} ctx.request
    * @param {Response} ctx.response
    */
-  async destroy ({ params, request, response }) {
-  }
+  async destroy({ params, request, response }) {}
 }
 
 module.exports = TransferController

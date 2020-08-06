@@ -49,7 +49,7 @@ class User extends Model {
     return this.hasMany('App/Models/Token')
   }
 
-  transfers () {
+  initiated () {
     return this.hasMany('App/Models/Transfer', 'id', 'sender_id')
   }
 

@@ -17,3 +17,6 @@ database/*.sqlite
 
 # Keystore file
 keystore.json
+
+# macOS
+.DS_Store

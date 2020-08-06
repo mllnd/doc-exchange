@@ -29,7 +29,9 @@
     "@adonisjs/shield": "^1.0.8",
     "@adonisjs/validator": "^5.0.6",
     "@sibevin/random-token": "^1.0.2",
+    "detect-character-encoding": "^0.8.0",
     "mysql": "^2.18.1",
+    "sha256-file": "^1.0.0",
     "web3": "^1.2.11"
   },
   "devDependencies": {},
