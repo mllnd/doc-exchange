@@ -43,8 +43,8 @@
 <h3 class="ui header">
   Recipient Signature:
   <div class="sub header">
-    @if(transfer.recipient_signature)
-      {{ transfer.recipient_signature }}
+    @if(transfer.receiver_signature)
+      {{ transfer.receiver_signature }}
     @else
       Not signed yet!
     @endif
@@ -54,7 +54,7 @@
   <form id="accept-sign-form" action="{{ route('TransferController.accept', { id: transfer.id }) }}" method="POST">
     {{ csrfField() }}
   </form>
-  <button id="accept-sign" type="submit" href="https://ropsten.etherscan.io/verifySig" class="ui button positive"><i class="pen square icon"></i>Accept and Sign</button>
+  <button id="accept-sign" type="submit" class="ui button positive"><i class="pen square icon"></i>Accept and Sign</button>
 @endif
 <a target="_blank" href="https://ropsten.etherscan.io/verifySig" class="ui button primary"><i class="ethereum icon"></i>Verify Signatures on Etherscan</a>
 @if((auth.user.id == transfer.sender.id && !transfer.receiver_signature) || (auth.user.id == transfer.recipient.id && transfer.receiver_signature))

@@ -1,7 +1,6 @@
-//SPDX-License-Identifier: MIT
 pragma solidity >= 0.5.0 < 0.7.0;
 
-contract DocumentContract {
+contract TransferContract {
 
   string public senderSignature;
   string public receiverSignature;
@@ -25,5 +24,10 @@ contract DocumentContract {
 
   function getOwnerAddress() public view returns (address) {
     return ownerAddress;
+  }
+
+  function setReceiverSignature(string memory signature) public {
+    require(msg.sender == ownerAddress, "Only platform operator can update receiver signature!");
+    receiverSignature = signature;
   }
 }
