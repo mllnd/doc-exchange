@@ -82,7 +82,7 @@ class TransferController {
     await TransferService.storeDocument(document, identifier)
 
     // Deploy a smart contract.
-    const contract = await TransferService.deployContract('DocumentContract', [signature, documentHash])
+    const contract = await TransferService.deployContract('TransferContract', [signature, documentHash])
     console.log(contract.options.address)
 
     // Attach the created contract.
